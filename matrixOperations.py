@@ -13,6 +13,7 @@ class MatrixOperations:
         self.results = Results()
         self.blacklist = []
         self.matrix_after_calculations = [[]]
+        self.critical_value_of_correlation = 0.55
 
 
     def loadFile(self, fileName):
@@ -24,11 +25,30 @@ class MatrixOperations:
     def get_matrix(self):
         return self.matrix
 
-    def aggregate_data(self):
-        pass
-
     def analise_graph(self):
-        pass
+        for i in range(len(self.results.matrixR)):
+            for j in range(len(self.results.matrixR[i])):
+                if math.fabs(self.results.matrixR[i][j]) < self.critical_value_of_correlation:
+                    self.results.matrixR[i][j] = 0
+        print(self.results.matrixR)
+        most_connections = 0
+        most_connected_values = []
+        for i in range(len(self.results.matrixR)):
+            count_connections = 0
+            for j in range(len(self.results.matrixR[i])):
+                if self.results.matrixR[i][j] != 0 and self.results.matrixR[i][j] <= 0.9999:
+                    count_connections += 1
+                    print("went in ")
+            if count_connections > most_connections:
+                most_connections = count_connections
+                most_connected_values = []
+                most_connected_values.append(i)
+            elif count_connections == most_connections:
+                most_connected_values.append(i)
+
+        print("most connected ", most_connected_values)
+
+
 
     def count_average_in_all_columns(self):
         for i in range(1,self.matrix_size_x):
@@ -56,7 +76,8 @@ class MatrixOperations:
         print("coefficient of random ", self.results.coefficient_of_random_variable)
 
     def count_matrixR0(self):
-        self.results.matrixR0 = np.corrcoef(np.transpose(self.matrix_after_calculations))
+        self.results.matrixR0 = np.corrcoef(self.matrix_after_calculations)
+        self.results.matrixR0 = self.results.matrixR0[1:, 0]
         print("matrix r0", self.results.matrixR0)
 
 
@@ -71,7 +92,6 @@ class MatrixOperations:
         return self.matrix_size_y
 
     def preparation_for_display(self):
-        self.aggregate_data()
         self.count_average_in_all_columns()
         self.count_standard_deviation()
         self.count_coefficient_of_random_variable()
@@ -95,4 +115,4 @@ class MatrixOperations:
         # self.matrix_after_calculations
         for i in range(len(self.blacklist)):
             self.matrix_after_calculations = np.delete(self.matrix_after_calculations, self.blacklist[i]-i+1, 0)
-        # print(self.matrix_after_calculations)
+        print(self.matrix_after_calculations)
