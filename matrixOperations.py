@@ -31,24 +31,54 @@ class MatrixOperations:
                 if math.fabs(self.results.matrixR[i][j]) < self.critical_value_of_correlation:
                     self.results.matrixR[i][j] = 0
         print(self.results.matrixR)
+        self.find_all_groups()
+        for set in self.results.groups_in_graph:
+            if len(set) > 1:
+                self.find_bests_from_group(set)
+        print(self.results.chosen_values_from_graphs)
+
+    def already_in_group(self, number):
+        for i in range(len(self.results.groups_in_graph)):
+            if number in self.results.groups_in_graph[i]:
+                return True
+        return False
+
+    def find_all_groups(self):
+        for i in range(len(self.results.matrixR)):
+            temporary_set = set()
+            for j in range(len(self.results.matrixR[i])):
+                if self.results.matrixR[i][j] != 0:
+                    if not self.already_in_group(j):
+                        temporary_set.add(j)
+                        temporary_set.add(i)
+            if len(temporary_set) > 0:
+                self.results.groups_in_graph.append(temporary_set)
+        print("sets ", self.results.groups_in_graph)
+
+    def find_bests_from_group(self, set):
         most_connections = 0
         most_connected_values = []
-        for i in range(len(self.results.matrixR)):
+        for value in set:
             count_connections = 0
-            for j in range(len(self.results.matrixR[i])):
-                if self.results.matrixR[i][j] != 0 and self.results.matrixR[i][j] <= 0.9999:
+            for j in range(len(self.results.matrixR[value])):
+                if self.results.matrixR[value][j] != 0 and self.results.matrixR[value][j] <= 0.9999:
                     count_connections += 1
-                    print("went in ")
+                    # print("went in ")
             if count_connections > most_connections:
                 most_connections = count_connections
                 most_connected_values = []
-                most_connected_values.append(i)
+                most_connected_values.append(value)
             elif count_connections == most_connections:
-                most_connected_values.append(i)
-
-        print("most connected ", most_connected_values)
-
-
+                most_connected_values.append(value)
+        highest_ratio = 0
+        for connected in most_connected_values:
+            if  math.fabs(self.results.matrixR0[connected]) > highest_ratio:
+                highest_ratio = self.results.matrixR0[connected]
+        for connected in most_connected_values:
+            # print("compare ", round(self.results.matrixR0[connected], 3), "with", round(highest_ratio, 3))
+            if math.fabs(round(self.results.matrixR0[connected], 3)) == round(highest_ratio, 3):
+                # print("went in")
+                self.results.chosen_values_from_graphs.append(connected)
 
     def count_average_in_all_columns(self):
         for i in range(1,self.matrix_size_x):
@@ -100,6 +130,7 @@ class MatrixOperations:
         self.count_matrixR0()
         self.count_matrixR()
         self.analise_graph()
+        self.method_KMNK()
 
     def discard_useless_data(self):
         a = 0.1
@@ -110,9 +141,9 @@ class MatrixOperations:
 
     def get_matrix_after_calculations(self):
         self.matrix_after_calculations = np.transpose(self.matrix)
-        # self.matrix_after_calculations = self.matrix_after_calculations[1:]
-        # print(self.matrix_after_calculations)
-        # self.matrix_after_calculations
         for i in range(len(self.blacklist)):
             self.matrix_after_calculations = np.delete(self.matrix_after_calculations, self.blacklist[i]-i+1, 0)
         print(self.matrix_after_calculations)
+
+    def method_KMNK(self):
+        pass
