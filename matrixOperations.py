@@ -131,6 +131,7 @@ class MatrixOperations:
         self.count_matrixR()
         self.analise_graph()
         self.method_KMNK()
+        self.model_verification()
 
     def discard_useless_data(self):
         a = 0.1
@@ -146,4 +147,33 @@ class MatrixOperations:
         print(self.matrix_after_calculations)
 
     def method_KMNK(self):
-        pass
+        for value in self.results.chosen_values_from_graphs:
+            self.results.KMNK_X.append(self.matrix_after_calculations[value+1])
+        self.results.KMNK_X.append(np.ones(len(self.results.KMNK_X[0])))
+        print("new macierz X", self.results.KMNK_X)
+        self.results.KMNK_X = np.transpose(self.results.KMNK_X)
+        x_t_x = np.matmul(np.transpose(self.results.KMNK_X), self.results.KMNK_X)
+        x_t_y = np.matmul(np.transpose(self.results.KMNK_X), self.matrix_after_calculations[0])
+        print(x_t_y)
+        print(np.linalg.inv(x_t_x))
+        self.results.value_a = np.matmul(np.linalg.inv(x_t_x), x_t_y)
+        print(self.results.value_a)
+        print(len(self.results.KMNK_X))
+        print(len(self.results.KMNK_X[0]))
+        y_t_y = np.matmul(np.transpose(self.matrix_after_calculations[0]), self.matrix_after_calculations[0])
+        y_t_X_a = np.matmul(np.matmul(np.transpose(self.matrix_after_calculations[0]), self.results.KMNK_X), self.results.value_a)
+        self.results.value_s2 = (1 / (len(self.results.KMNK_X) - len(self.results.KMNK_X[0])))*(y_t_y -y_t_X_a)
+        print(self.results.value_s2)
+        self.results.value_D = np.sqrt(self.results.value_s2 * np.linalg.inv(x_t_x))
+        print(self.results.value_D)
+
+    def model_verification(self):
+        for value in self.matrix_after_calculations[0]:
+            self.results.sum_y += value
+            self.results.sum_y_qtr +=  value ** 2
+        self.results.value_fi_q = ((len(self.results.KMNK_X) - len(self.results.KMNK_X[0])) * self.results.value_s2) / (self.results.sum_y_qtr - (self.results.sum_y ** 2 / len(self.results.KMNK_X)))
+        print("value fi^2 ", self.results.value_fi_q)
+        self.results.value_vs = np.sqrt(self.results.value_s2) / (self.results.sum_y / len(self.results.KMNK_X)) * 100
+        print(np.sqrt(self.results.value_s2))
+        print("average Y ", (self.results.sum_y / len(self.results.KMNK_X)))
+        print("value vs ", self.results.value_vs)
