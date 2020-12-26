@@ -206,12 +206,6 @@ class MatrixOperations:
         temporary_value_D2 = np.absolute(self.results.value_s2 * np.linalg.inv(x_t_x))
         print("temporrary_value_d2 ", temporary_value_D2)
         self.results.value_D = np.sqrt(temporary_value_D2)
-        self.calculations_string += "Następnie obliczono D2 i otrzymano model: \n"
-        self.calculations_string += "yi = "
-        for i in range(len(self.results.value_D)-1):
-            self.calculations_string += str(round(self.results.value_D[i][i],4)) + " x" + str(i) + " + "
-        self.calculations_string += str(round(self.results.value_D[len(self.results.value_D)-1][len(self.results.value_D)-1],5)) + " \n"
-        print("D value ", self.results.value_D)
 
     def model_verification(self):
         for value in self.matrix_after_calculations[0]:

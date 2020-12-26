@@ -1,7 +1,7 @@
 from graphicalInterface import *
 
 
-gui = GraphicalInterface('example.txt')
+gui = GraphicalInterface('data.txt')
 gui.start_application()
 
 
