@@ -2,6 +2,8 @@ from typing import List
 import math
 from results import *
 import numpy as np
+import sys
+import tkinter.messagebox as tkMessageBox
 
 class MatrixOperations:
     matrix: List[List[float]]
@@ -18,10 +20,14 @@ class MatrixOperations:
 
 
     def loadFile(self, fileName):
-        with open(fileName) as plik:
-            table = [list(map(float, wiersz.split(' '))) for wiersz in plik]
-        print(table)
-        return table
+        try:
+            with open(fileName) as plik:
+                table = [list(map(float, wiersz.split(' '))) for wiersz in plik]
+            print(table)
+            return table
+        except:
+            tkMessageBox.showerror('Problem z plikiem', 'Plik o nazwie "data.txt" nie istnieje lub ma niepoprawny format')
+            sys.exit(1)
 
     def get_matrix(self):
         return self.matrix
