@@ -162,14 +162,17 @@ class MatrixOperations:
         self.count_coefficient_of_random_variable()
         self.discard_useless_data()
         self.get_matrix_after_calculations()
-        self.count_matrixR0()
-        self.count_matrixR()
-        self.analise_graph()
-        if len(self.results.chosen_values_from_graphs) > 0 :
-            self.method_KMNK()
-            self.model_verification()
+        if  len(self.matrix_after_calculations) > 1:
+            self.count_matrixR0()
+            self.count_matrixR()
+            self.analise_graph()
+            if len(self.results.chosen_values_from_graphs) > 0 :
+                self.method_KMNK()
+                self.model_verification()
+            else:
+                self.calculations_string += "Nie wybrano z grafów żadnej wartości, dlatego, nie jest możliwe dalsze ustalanie modelu \n"
         else:
-            self.calculations_string += "Nie wybrano z grafów żadnej wartości, dlatego, nie jest możliwe dalsze ustalanie modelu \n"
+            self.calculations_string += "Po odrzuceniu zmiennych ze zbyt małą korelacją, nie została zadna zmienna objasniajaca \n"
 
     def discard_useless_data(self):
         a = 0.1
